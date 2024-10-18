@@ -3,6 +3,10 @@ name: Example Workflow on Folder Changes
 on:
   push:
     paths:
+      - 'Test_folder/*'
+  pull_request:
+    paths:
+      - 'Test_folder/*'
 
 jobs:
   your_job:
