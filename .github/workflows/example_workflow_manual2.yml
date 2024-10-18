@@ -1,4 +1,4 @@
-name: Example Manual Workflow on repo Changes
+name: Example Workflow on repo Changes
 
 on:
   push:
@@ -13,13 +13,16 @@ jobs:
       - name: Check for changes in specific paths
         id: check_changes
         run: |
-          # Using git diff to check for changes in 'dbt_common' directory
-          # between the current HEAD and the last commit.
-          git diff --quiet HEAD HEAD~1 -- dbt_common
-          if [ $? -eq 1 ]; then
-            echo "::set-output name=changes_detected::true"
+          if [ $(git rev-list --count HEAD) -gt 1 ]; then
+            git diff --quiet HEAD HEAD~1 -- dbt_common
+            if [ $? -eq 1 ]; then
+              echo "::set-output name=changes_detected::true"
+            else
+              echo "::set-output name=changes_detected::false"
+            fi
           else
-            echo "::set-output name=changes_detected::false"
+            echo "There's only one commit or a manual trigger, assuming changes."
+            echo "::set-output name=changes_detected::true"
           fi
       - name: Run a script or command if changes detected
         if: steps.check_changes.outputs.changes_detected == 'true'
