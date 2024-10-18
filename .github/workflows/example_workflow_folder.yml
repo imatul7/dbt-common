@@ -1,0 +1,24 @@
+name: Example Workflow on Folder Changes
+
+on:
+  push:
+    paths:
+<<<<<<< HEAD:.github/workflows/example_workflow_folder.yml
+      - 'Test_folder/*'
+  pull_request:
+    paths:
+      - 'Test_folder/*'
+=======
+      - 'dbt-common/'
+  pull_request:
+    paths:
+      - 'dbt-common/'
+>>>>>>> 8960d51ab9d04d9963fd15830e830593e6c2da5c:.github/workflows/example_workflow.yml
+
+jobs:
+  your_job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run a script or command
+      run: echo "Changes detected in dbt-common/"
