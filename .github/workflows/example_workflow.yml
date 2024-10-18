@@ -3,10 +3,10 @@ name: Example Workflow on Folder Changes
 on:
   push:
     paths:
-      - 'dbt-common/*'
+      - 'dbt-common/'
   pull_request:
     paths:
-      - 'dbt-common/*'
+      - 'dbt-common/'
 
 jobs:
   your_job:
