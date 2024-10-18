@@ -1,0 +1,17 @@
+name: Example Workflow on Folder Changes
+
+on:
+  push:
+    paths:
+      - 'dbt-common/*'
+  pull_request:
+    paths:
+      - 'dbt-common/*'
+
+jobs:
+  your_job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run a script or command
+      run: echo "Changes detected in dbt-common/"
