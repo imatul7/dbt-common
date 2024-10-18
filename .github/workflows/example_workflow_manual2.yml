@@ -1,4 +1,4 @@
-name: Example Workflow on repo Changes
+name: Example Workflow on manual repo Changes
 
 on:
   push:
