@@ -1,12 +1,8 @@
-name: Example Workflow on Folder Changes
+name: Example Workflow on repo Changes
 
 on:
   push:
-    paths:
-      - 'dbt-common/*'
   pull_request:
-    paths:
-      - 'dbt-common/*'
 
 jobs:
   your_job:
