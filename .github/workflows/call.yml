@@ -21,8 +21,11 @@ jobs:
     
   capture-env-vars:
     runs-on: ubuntu-latest
-    needs: use-vars
+    needs: [use-vars]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
       - name: capture variables by branch
         run: |
           echo "SF_ACCOUNT=${{ needs.use-vars.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
