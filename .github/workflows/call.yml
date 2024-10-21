@@ -1,6 +1,8 @@
 name: Use Environment Variables Workflow
 
 on: 
+  workflow_run:
+    workflows: [Setup Env Vars by Branch]
   workflow_dispatch:
     inputs:
       TARGET_BRANCH:
