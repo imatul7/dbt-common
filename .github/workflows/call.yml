@@ -16,16 +16,6 @@ jobs:
     with:
       MERGE_TARGET: 'main' # Set this as necessary
     secrets: inherit # In case you need to inherit secrets
-      - name: Capture outputs
-        run: |
-          echo "SF_ACCOUNT=${{ steps.setEnvVars.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
-          echo "SF_REGION=${{ steps.setEnvVars.outputs.SF_REGION }}" >> $GITHUB_ENV
-          echo "SF_DATABASE=${{ steps.setEnvVars.outputs.SF_DATABASE }}" >> $GITHUB_ENV
-          echo "SF_ROLE=${{ steps.setEnvVars.outputs.SF_ROLE }}" >> $GITHUB_ENV
-          echo "SF_WAREHOUSE=${{ steps.setEnvVars.outputs.SF_WAREHOUSE }}" >> $GITHUB_ENV
-          echo "SF_DATABASE_RAW=${{ steps.setEnvVars.outputs.SF_DATABASE_RAW }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_DATABASE=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_SCHEMA=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
 
   print-vars:
     needs: use-vars # Ensure this job runs after the use-vars job
@@ -37,9 +27,3 @@ jobs:
       - name: Print SF Region
         run: echo "SF Region is ${{ needs.use-vars.outputs.SF_REGION }}"
       # Continue using other outputs as needed
-
-      - name: Print SF Dattabase
-        run: echo "SF Region is ${{ needs.use-vars.outputs.SF_DATABASE }}"
-      # Continue using other outputs as needed
-
-
