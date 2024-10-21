@@ -1,0 +1,28 @@
+name: Use Environment Variables Workflow
+
+on: 
+  push:
+    branches:
+      - main # Trigger on push to main, adjust as necessary
+
+jobs:
+  use-vars:
+    uses: ./.github/workflows/env-setup-workflow.yml@main
+    with:
+      MERGE_TARGET: 'main' # Set this as necessary
+    secrets: inherit # In case you need to inherit secrets
+
+    outputs:
+      sf_account: ${{ jobs.use-vars.outputs.SF_ACCOUNT }}
+      sf_region: ${{ jobs.use-vars.outputs.SF_REGION }}
+      # Add other outputs as needed
+
+  print-vars:
+    needs: [use-vars] # Ensure this job runs after the use-vars job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print SF Account
+        run: echo "SF Account is ${{ needs.use-vars.outputs.sf_account }}"
+
+      - name: Print SF Region
+        run: echo "SF Region is ${{ needs.use-vars.outputs.sf_region }}"
