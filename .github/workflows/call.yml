@@ -1,27 +1,17 @@
 name: Use Environment Variables Workflow
 
 on: 
-  workflow_run:
-    workflows: [Setup Env Vars by Branch]
-  workflow_dispatch:
-    inputs:
-      TARGET_BRANCH:
-        required: true
-        description: 'Specify the target branch'
   push:
-    branches:
-      - main
-
 jobs:
   setup-env-vars-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up variables by branch
         id: setOutputs
-        uses: ./.github/workflows/main.yml
+        uses: ./.github/workflows/main.yml@main
         with:
           MERGE_TARGET: 'main'
 
@@ -42,7 +32,7 @@ jobs:
     needs: [setup-env-vars-branch]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: capture variables by branch
         run: |
