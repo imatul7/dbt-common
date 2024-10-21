@@ -16,7 +16,17 @@ jobs:
     with:
       MERGE_TARGET: 'main' # Set this as necessary
     secrets: inherit # In case you need to inherit secrets
-
+  capture-env-vars:
+    runs-on: ubuntu-latest
+    steps:
+      echo "SF_ACCOUNT=${{ steps.setEnvVars.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
+      echo "SF_REGION=${{ steps.setEnvVars.outputs.SF_REGION }}" >> $GITHUB_ENV
+      echo "SF_DATABASE=${{ steps.setEnvVars.outputs.SF_DATABASE }}" >> $GITHUB_ENV
+      echo "SF_ROLE=${{ steps.setEnvVars.outputs.SF_ROLE }}" >> $GITHUB_ENV
+      echo "SF_WAREHOUSE=${{ steps.setEnvVars.outputs.SF_WAREHOUSE }}" >> $GITHUB_ENV
+      echo "SF_DATABASE_RAW=${{ steps.setEnvVars.outputs.SF_DATABASE_RAW }}" >> $GITHUB_ENV
+      echo "DBT_ARTIFACTS_DATABASE=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
+      echo "DBT_ARTIFACTS_SCHEMA=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
   print-vars:
     needs: use-vars # Ensure this job runs after the use-vars job
     runs-on: ubuntu-latest
