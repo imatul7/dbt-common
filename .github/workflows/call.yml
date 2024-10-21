@@ -18,9 +18,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up variables by branch
-        uses: ./github/workflows/main.yml@main
+        uses: ./github/workflows/main.yml
         with:
-          MERGE_TARGET: 'main'
+          MERGE_TARGET: 'main' # Set this as necessary
+          secrets: inherit # In case you need to inherit secrets
         
       - name: Capture outputs
         run: |
