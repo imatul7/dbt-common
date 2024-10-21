@@ -12,7 +12,7 @@ on:
 
 jobs:
   use-vars:
-    runs-on: ubuntu 
+    runs-on: ubuntu-latest
     steps:
       - name: Set up variables by branch
         uses: ./github/workflows/main.yml
