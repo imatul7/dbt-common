@@ -26,7 +26,7 @@ jobs:
       - name: capture variables by branch
         run: |
           echo "SF_ACCOUNT=${{ env.SF_ACCOUNT }}" >> $GITHUB_ENV
-          echo ${{ env.SF_ACCOUNT }}
+          printenv
           echo "SF_REGION=${{ env.SF_REGION }}" >> $GITHUB_ENV
           echo "SF_DATABASE=${{ env.SF_DATABASE }}" >> $GITHUB_ENV
           echo "SF_ROLE=${{ env.SF_ROLE }}" >> $GITHUB_ENV
