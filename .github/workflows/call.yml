@@ -19,10 +19,11 @@ jobs:
     
   capture-env-vars:
     runs-on: ubuntu-latest
+    needs: use-vars
     steps:
       - name: capture variables by branch
         run: |
-          echo "SF_ACCOUNT=${{ job.use-vars.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
+          echo "SF_ACCOUNT=${{ needs.use-vars.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
           echo "SF_REGION=${{ steps.setEnvVars.outputs.SF_REGION }}" >> $GITHUB_ENV
           echo "SF_DATABASE=${{ steps.setEnvVars.outputs.SF_DATABASE }}" >> $GITHUB_ENV
           echo "SF_ROLE=${{ steps.setEnvVars.outputs.SF_ROLE }}" >> $GITHUB_ENV
