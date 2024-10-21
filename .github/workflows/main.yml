@@ -1,0 +1,33 @@
+name: Setup Env Vars by Branch
+
+on:
+  workflow_call:
+    inputs:
+      MERGE_TARGET:
+        required: true
+        type: string
+
+jobs:
+  setup-env-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      SF_ACCOUNT: ${{ steps.setOutputs.outputs.SF_ACCOUNT }}
+      SF_REGION: ${{ steps.setOutputs.outputs.SF_REGION }}
+      SF_DATABASE: ${{ steps.setOutputs.outputs.SF_DATABASE }}
+      SF_ROLE: ${{ steps.setOutputs.outputs.SF_ROLE }}
+      SF_WAREHOUSE: ${{ steps.setOutputs.outputs.SF_WAREHOUSE }}
+      SF_DATABASE_RAW: ${{ steps.setOutputs.outputs.SF_DATABASE_RAW }}
+      DBT_ARTIFACTS_DATABASE: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_DATABASE }}
+      DBT_ARTIFACTS_SCHEMA: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_SCHEMA }}
+    steps:
+      - name: Set up variables by branch
+        id: setOutputs
+        run: |
+          echo "::set-output name=SF_ACCOUNT::hardcoded-account"
+          echo "::set-output name=SF_REGION::hardcoded-region"
+          echo "::set-output name=SF_DATABASE::hardcoded-database"
+          echo "::set-output name=SF_ROLE::hardcoded-role"
+          echo "::set-output name=SF_WAREHOUSE::hardcoded-warehouse"
+          echo "::set-output name=SF_DATABASE_RAW::hardcoded-database-raw"
+          echo "::set-output name=DBT_ARTIFACTS_DATABASE::hardcoded-dbt-artifacts-db"
+          echo "::set-output name=DBT_ARTIFACTS_SCHEMA::hardcoded-dbt-artifacts-schema"
