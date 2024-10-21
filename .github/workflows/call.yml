@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up variables by branch
-        uses: ./github/workflows/main.yml
+        uses: ./github/workflows/main.yml@main
         with:
           MERGE_TARGET: 'main'
         
