@@ -29,9 +29,9 @@ jobs:
       - name: Set up variables by branch
         id: setEnvVars
         run: |
-          echo "SF_ACCOUNT=hardcoded-account" >> $GITHUB_ENV
-          echo "SF_REGION=hardcoded-region" >> $GITHUB_ENV
-          echo "SF_DATABASE=hardcoded-database" >> $GITHUB_ENV
+          echo "SF_ACCOUNT=hardcoded-account" >> $GITHUB_OUTPUT
+          echo "SF_REGION=hardcoded-region" >> $GITHUB_OUTPUT
+          echo "SF_DATABASE=hardcoded-database" >> $GITHUB_OUTPUT
           echo "SF_ROLE=hardcoded-role" >> $GITHUB_OUTPUT
           echo "SF_WAREHOUSE=hardcoded-warehouse" >> $GITHUB_OUTPUT
           echo "SF_DATABASE_RAW=hardcoded-database-raw" >> $GITHUB_OUTPUT
