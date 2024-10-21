@@ -1,9 +1,14 @@
 name: Use Environment Variables Workflow
 
 on: 
+  workflow_dispatch:
+    inputs:
+      TARGET_BRANCH:
+        required: true
+        description: 'Specify the target branch'
   push:
     branches:
-      - main # Trigger on push to main, adjust as necessary
+      - main
 
 jobs:
   use-vars:
