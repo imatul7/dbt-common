@@ -29,15 +29,6 @@ jobs:
       - name: Set up variables by branch
         id: setEnvVars
         run: |
-          echo "SF_ACCOUNT=hardcoded-account" >> $GITHUB_ENV
-          echo "SF_REGION=hardcoded-region" >> $GITHUB_ENV
-          echo "SF_DATABASE=hardcoded-database" >> $GITHUB_ENV
-          echo "SF_ROLE=hardcoded-role" >> $GITHUB_ENV
-          echo "SF_WAREHOUSE=hardcoded-warehouse" >> $GITHUB_ENV
-          echo "SF_DATABASE_RAW=hardcoded-database-raw" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_DATABASE=hardcoded-dbt-artifacts-db" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_SCHEMA=hardcoded-dbt-artifacts-schema" >> $GITHUB_ENV
-          # Set outputs using output environment variables
           echo "SF_ACCOUNT=hardcoded-account" >> $GITHUB_OUTPUT
           echo "SF_REGION=hardcoded-region" >> $GITHUB_OUTPUT
           echo "SF_DATABASE=hardcoded-database" >> $GITHUB_OUTPUT
