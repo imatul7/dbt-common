@@ -12,7 +12,7 @@ on:
 
 jobs:
   use-vars:
-    uses: ./.github/workflows/env-setup-workflow.yml@main
+    uses: ./.github/workflows/main.yml@main
     with:
       MERGE_TARGET: 'main' # Set this as necessary
     secrets: inherit # In case you need to inherit secrets
