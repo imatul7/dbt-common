@@ -6,6 +6,12 @@ on:
       MERGE_TARGET:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      MERGE_TARGET:
+        required: true
+        type: string
+        description: 'Target branch for merge'
 
 jobs:
   setup-env-vars:
