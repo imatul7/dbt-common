@@ -38,3 +38,9 @@ jobs:
       - name: Print SF Region
         run: echo "SF Region is ${{ needs.use-vars.outputs.SF_REGION }}"
       # Continue using other outputs as needed
+
+      - name: Print SF Dattabase
+        run: echo "SF Region is ${{ needs.use-vars.outputs.SF_DATABASE }}"
+      # Continue using other outputs as needed
+
+
