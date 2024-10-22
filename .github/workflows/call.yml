@@ -14,12 +14,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print SF Account
-        run: echo ${{ needs.setup-env-vars-branch.outputs.firstword }}
+        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_account }}
 
       - name: Print SF Region
-        run: echo "SF Region  is ${{ needs.setup-env-vars-branch.outputs.SF_REGION }}"
-      # Continue using other outputs as needed
+        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_region }}
 
+      - name: Print SF Database
+        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_database }}
 
+      - name: Print SF Role
+        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_role }}
 
-      
+      - name: Print SF Warehouse
+        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_warehouse }}
+
+      - name: Print SF Database Raw
+        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_database_raw }}
+
+      - name: Print Dbt Artifacts Database
+        run: echo ${{ needs.setup-env-vars-branch.outputs.dbt_artifacts_database }}
+
+      - name: Print Dbt Artifacts Schema
+        run: echo ${{ needs.setup-env-vars-branch.outputs.dbt_artifacts_schema }}
+
