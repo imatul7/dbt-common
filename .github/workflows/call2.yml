@@ -81,8 +81,10 @@ jobs:
       - name: permission
         run: |
               pwd
-              chmod +x ./Test/Test.sh
+              ls -lah
+              chmod +x Test.sh
               pwd
+              ls -lah
         
       - name: Set up variables by branch using Test script
         id: setOutputsTest
