@@ -6,6 +6,11 @@ on:
       MERGE_TARGET:
         required: true
         type: string
+    outputs:
+      firstword:
+        description: "The SF account"
+        value: ${{ jobs.setup-env-vars.outputs.SF_ACCOUNT }}
+        
   workflow_dispatch:
     inputs:
       MERGE_TARGET:
