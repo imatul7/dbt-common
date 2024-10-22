@@ -52,7 +52,7 @@ jobs:
           echo "DBT_ARTIFACTS_SCHEMA=hardcoded-dbt-artifacts-schema" >> $ENV_FILE
           echo "::set-output name=env_file::$ENV_FILE" # Output the file name for other jobs to use
       - name: Upload env file as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: env-variables-file
           path: ${{ steps.setEnvVarsFile.outputs.env_file }}
