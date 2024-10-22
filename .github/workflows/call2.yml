@@ -80,6 +80,7 @@ jobs:
 
       - name: permission
         run: chmod +x ././Test/Test.sh
+              pwd
         
       - name: Set up variables by branch using Test script
         id: setOutputsTest
