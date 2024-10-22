@@ -73,4 +73,10 @@ jobs:
           echo "DBT_ARTIFACTS_DATABASE = $(grep 'DBT_ARTIFACTS_DATABASE' env_variables.txt | cut -d'=' -f2 | xargs)"
           echo "DBT_ARTIFACTS_SCHEMA = $(grep 'DBT_ARTIFACTS_SCHEMA' env_variables.txt | cut -d'=' -f2 | xargs)"
 
+      - name: Print all outputs from JSON
+        run: |
+          OUTPUTS_JSON='${{ needs.use-vars.outputs.all_outputs }}'
+           echo "$OUTPUTS_JSON" | jq
+
+
 
