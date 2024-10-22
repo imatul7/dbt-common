@@ -12,7 +12,6 @@ jobs:
           repository: ${{ github.repository }}
           
       - name: Set up variables by branch
-        id: setOutputs
         uses: ./.github/workflows/main.yml@main
         with:
           MERGE_TARGET: 'main'
@@ -20,14 +19,14 @@ jobs:
       - name: Capture outputs
         id: captureOutputs
         run: |
-          echo "SF_ACCOUNT=${{ steps.setOutputs.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
-          echo "SF_REGION=${{ steps.setOutputs.outputs.SF_REGION }}" >> $GITHUB_ENV
-          echo "SF_DATABASE=${{ steps.setOutputs.outputs.SF_DATABASE }}" >> $GITHUB_ENV
-          echo "SF_ROLE=${{ steps.setOutputs.outputs.SF_ROLE }}" >> $GITHUB_ENV
-          echo "SF_WAREHOUSE=${{ steps.setOutputs.outputs.SF_WAREHOUSE }}" >> $GITHUB_ENV
-          echo "SF_DATABASE_RAW=${{ steps.setOutputs.outputs.SF_DATABASE_RAW }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_DATABASE=${{ steps.setOutputs.outputs.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_SCHEMA=${{ steps.setOutputs.outputs.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
+          echo "SF_ACCOUNT=${{ steps.setEnvVars.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
+          echo "SF_REGION=${{ steps.setEnvVars.outputs.SF_REGION }}" >> $GITHUB_ENV
+          echo "SF_DATABASE=${{ steps.setEnvVars.outputs.SF_DATABASE }}" >> $GITHUB_ENV
+          echo "SF_ROLE=${{ steps.setEnvVars.outputs.SF_ROLE }}" >> $GITHUB_ENV
+          echo "SF_WAREHOUSE=${{ steps.setEnvVars.outputs.SF_WAREHOUSE }}" >> $GITHUB_ENV
+          echo "SF_DATABASE_RAW=${{ steps.setEnvVars.outputs.SF_DATABASE_RAW }}" >> $GITHUB_ENV
+          echo "DBT_ARTIFACTS_DATABASE=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
+          echo "DBT_ARTIFACTS_SCHEMA=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
     
   capture-env-vars:
     runs-on: ubuntu-latest
@@ -53,8 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print SF Account
-        run: echo "SF Account is ${{ needs.use-vars.outputs.SF_ACCOUNT }}"
+        run: echo "SF Account is ${{ needs.setup-env-vars-branch.outputs.SF_ACCOUNT }}"
 
       - name: Print SF Region
-        run: echo "SF Region is ${{ needs.use-vars.outputs.SF_REGION }}"
+        run: echo "SF Region is ${{ needs.setup-env-vars-branch.outputs.SF_REGION }}"
       # Continue using other outputs as needed
