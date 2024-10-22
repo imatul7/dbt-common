@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print SF Account
-        run: echo "$SF_Account"
+        run: echo ${{ needs.setup-env-vars-branch.outputs.firstword }}
 
       - name: Print SF Region
         run: echo "SF Region  is ${{ needs.setup-env-vars-branch.outputs.SF_REGION }}"
