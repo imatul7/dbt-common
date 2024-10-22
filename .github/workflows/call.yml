@@ -6,6 +6,8 @@ on:
 jobs:
   setup-env-vars-branch:
     runs-on: ubuntu-latest
+    outputs:
+      env_file: ${{ steps.setEnvVars.outputs.env_file }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -56,6 +58,18 @@ jobs:
       - name: Print SF Region
         run: echo "SF Region is ${{ needs.setup-env-vars-branch.outputs.SF_REGION }}"
       # Continue using other outputs as needed
+
+
+      - name: Print Environment Variables from File
+        run: |
+          FILE="${{ steps.setEnvVars.outputs.env_file }}"
+          if [ -f "$FILE" ]; then
+            while IFS= read -r line; do
+              echo "$line"
+            done < "$FILE"
+          else
+            echo "$FILE does not exist."
+          fi
 
 
       
