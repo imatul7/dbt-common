@@ -47,7 +47,7 @@ jobs:
           echo "DBT_ARTIFACTS_SCHEMA=${{ needs.setup-env-vars-branch.outputs.DBT_ARTIFACTS_SCHEMA }}"
           
   print-vars:
-    needs: [setup-env-vars-branch] # Ensure this job runs after the use-vars job
+    needs: [setup-env-vars-branch] 
     runs-on: ubuntu-latest
     steps:
       - name: Print SF Account
@@ -56,3 +56,6 @@ jobs:
       - name: Print SF Region
         run: echo "SF Region is ${{ needs.setup-env-vars-branch.outputs.SF_REGION }}"
       # Continue using other outputs as needed
+
+
+      
