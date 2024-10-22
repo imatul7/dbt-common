@@ -1,0 +1,59 @@
+name: Atul Use Environment Variables Workflow
+
+on: 
+  workflow_run:
+    workflows: [Setup Env Vars by Branch]
+  workflow_dispatch:
+    inputs:
+      TARGET_BRANCH:
+        required: true
+        description: 'Specify the target branch'
+  push:
+    branches:
+      - main
+
+jobs:
+  use-vars:
+    uses: ./.github/workflows/main.yml
+    with:
+      MERGE_TARGET: 'main' # Set this as necessary
+    secrets: inherit # In case you need to inherit secrets
+    
+  capture-env-vars:
+    runs-on: ubuntu-latest
+    needs: use-vars
+    steps:
+      - name: capture variables by branch
+        run: |
+          echo "SF_ACCOUNT=${{ env.SF_ACCOUNT }}" >> $GITHUB_ENV
+          printenv
+          echo "SF_REGION=${{ env.SF_REGION }}" >> $GITHUB_ENV
+          echo "SF_DATABASE=${{ env.SF_DATABASE }}" >> $GITHUB_ENV
+          echo "SF_ROLE=${{ env.SF_ROLE }}" >> $GITHUB_ENV
+          echo "SF_WAREHOUSE=${{ env.SF_WAREHOUSE }}" >> $GITHUB_ENV
+          echo "SF_DATABASE_RAW=${{ env.SF_DATABASE_RAW }}" >> $GITHUB_ENV
+          echo "DBT_ARTIFACTS_DATABASE=${{ env.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
+          echo "DBT_ARTIFACTS_SCHEMA=${{ env.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
+          echo "VAULT_TOKEN=${{ env.VAULT_TOKEN }}" >> $GITHUB_ENV
+          
+  print-vars:
+    needs: use-vars # Ensure this job runs after the use-vars job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print SF Account
+        run: echo "SF Account is ${{ needs.use-vars.outputs.SF_ACCOUNT }}"
+
+      - name: Print SF Region
+        run: echo "SF Region is ${{ needs.use-vars.outputs.SF_REGION }}"
+      # Continue using other outputs as needed
+
+      - name: Print Environment Variables from File
+        run: |
+          FILE="${{ steps.setEnvVars.outputs.env_file }}"
+          if [ -f "$FILE" ]; then
+            while IFS= read -r line; do
+              echo "$line"
+            done < "$FILE"
+          else
+            echo "$FILE does not exist."
+          fi
