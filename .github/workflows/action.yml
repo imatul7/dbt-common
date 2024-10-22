@@ -37,3 +37,18 @@ jobs:
           echo "SF_DATABASE_RAW=hardcoded-database-raw" >> $GITHUB_OUTPUT
           echo "DBT_ARTIFACTS_DATABASE=hardcoded-dbt-artifacts-db" >> $GITHUB_OUTPUT
           echo "DBT_ARTIFACTS_SCHEMA=hardcoded-dbt-artifacts-schema" >> $GITHUB_OUTPUT
+
+      - name: Set up variables by branch
+        id: setEnvVarsFile
+        run: |
+          ENV_FILE=env_variables.txt
+          echo "SF_ACCOUNT=hardcoded-account" >> $ENV_FILE
+          echo "SF_REGION=hardcoded-region" >> $ENV_FILE
+          echo "SF_DATABASE=hardcoded-database" >> $ENV_FILE
+          echo "SF_ROLE=hardcoded-role" >> $ENV_FILE
+          echo "SF_WAREHOUSE=hardcoded-warehouse" >> $ENV_FILE
+          echo "SF_DATABASE_RAW=hardcoded-database-raw" >> $ENV_FILE
+          echo "DBT_ARTIFACTS_DATABASE=hardcoded-dbt-artifacts-db" >> $ENV_FILE
+          echo "DBT_ARTIFACTS_SCHEMA=hardcoded-dbt-artifacts-schema" >> $ENV_FILE
+          echo "::set-output name=env_file::$ENV_FILE" # Output the file name for other jobs to use
+
