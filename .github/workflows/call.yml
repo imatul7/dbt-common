@@ -2,16 +2,16 @@ name: Use Environment Variables Workflow
 
 on: 
   push:
+
 jobs:
   setup-env-vars-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository }}
-          
+
       - name: Set up variables by branch
+        id: setEnvVars
         uses: ./.github/workflows/action.yml
         with:
           MERGE_TARGET: 'main'
@@ -27,25 +27,24 @@ jobs:
           echo "SF_DATABASE_RAW=${{ steps.setEnvVars.outputs.SF_DATABASE_RAW }}" >> $GITHUB_ENV
           echo "DBT_ARTIFACTS_DATABASE=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
           echo "DBT_ARTIFACTS_SCHEMA=${{ steps.setEnvVars.outputs.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
-    
+
   capture-env-vars:
     runs-on: ubuntu-latest
     needs: [setup-env-vars-branch]
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
-        
-      - name: capture variables by branch
+
+      - name: Capture variables by branch
         run: |
-          echo "SF_ACCOUNT=${{ needs.setup-env-vars-branch.outputs.SF_ACCOUNT }}" >> $GITHUB_ENV
-          echo "SF_REGION=${{ needs.setup-env-vars-branch.outputs.SF_REGION }}" >> $GITHUB_ENV
-          echo "SF_DATABASE=${{ needs.setup-env-vars-branch.outputs.SF_DATABASE }}" >> $GITHUB_ENV
-          echo "SF_ROLE=${{ needs.setup-env-vars-branch.outputs.SF_ROLE }}" >> $GITHUB_ENV
-          echo "SF_WAREHOUSE=${{ needs.setup-env-vars-branch.outputs.SF_WAREHOUSE }}" >> $GITHUB_ENV
-          echo "SF_DATABASE_RAW=${{ needs.setup-env-vars-branch.outputs.SF_DATABASE_RAW }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_DATABASE=${{ needs.setup-env-vars-branch.outputs.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_SCHEMA=${{ needs.setup-env-vars-branch.outputs.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
-          echo "VAULT_TOKEN=${{ needs.vault-auth.outputs.VAULT_TOKEN }}" >> $GITHUB_ENV
+          echo "SF_ACCOUNT=${{ needs.setup-env-vars-branch.outputs.SF_ACCOUNT }}"
+          echo "SF_REGION=${{ needs.setup-env-vars-branch.outputs.SF_REGION }}"
+          echo "SF_DATABASE=${{ needs.setup-env-vars-branch.outputs.SF_DATABASE }}"
+          echo "SF_ROLE=${{ needs.setup-env-vars-branch.outputs.SF_ROLE }}"
+          echo "SF_WAREHOUSE=${{ needs.setup-env-vars-branch.outputs.SF_WAREHOUSE }}"
+          echo "SF_DATABASE_RAW=${{ needs.setup-env-vars-branch.outputs.SF_DATABASE_RAW }}"
+          echo "DBT_ARTIFACTS_DATABASE=${{ needs.setup-env-vars-branch.outputs.DBT_ARTIFACTS_DATABASE }}"
+          echo "DBT_ARTIFACTS_SCHEMA=${{ needs.setup-env-vars-branch.outputs.DBT_ARTIFACTS_SCHEMA }}"
           
   print-vars:
     needs: [setup-env-vars-branch] # Ensure this job runs after the use-vars job
