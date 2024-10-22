@@ -77,12 +77,15 @@ jobs:
         run: |
           OUTPUTS_JSON='${{ needs.use-vars.outputs.all_outputs }}'
            echo "$OUTPUTS_JSON" | jq
-           
+
+      - name: permission
+        run: chmod +x ./Test_folder/Test.sh
+        
       - name: Set up variables by branch using Test script
         id: setOutputsTest
         env: 
             MERGE_TARGET: 'main' 
-        run: ./dbt-common/Test_folder/Test.sh >> $GITHUB_OUTPUT
+        run: ./Test_folder/Test.sh >> $GITHUB_OUTPUT
                 
       
 
