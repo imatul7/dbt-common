@@ -6,6 +6,8 @@ on:
 jobs:
   setup-env-vars-branch:
     uses: ./.github/workflows/action.yml
+    with:
+        MERGE_TARGET: 'main'
 
   capture-env-vars:
     runs-on: ubuntu-latest
