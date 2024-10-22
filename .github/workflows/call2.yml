@@ -14,7 +14,7 @@ on:
 
 jobs:
   use-vars:
-    uses: ./.github/workflows/main.yml
+    uses: ./.github/workflows/action.yml
     with:
       MERGE_TARGET: 'main' # Set this as necessary
     secrets: inherit # In case you need to inherit secrets
