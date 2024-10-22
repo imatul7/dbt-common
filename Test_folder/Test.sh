@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "Hello, World!"
+echo "SF_DATABASE=hardcoded-database"
