@@ -81,14 +81,14 @@ jobs:
       - name: permission
         run: |
               pwd
-              chmod +x ./Test/Test.sh
+              chmod +x ./dbt-common/Test/Test.sh
               pwd
         
       - name: Set up variables by branch using Test script
         id: setOutputsTest
         env: 
             MERGE_TARGET: 'main' 
-        run: ./Test/Test.sh >> $GITHUB_OUTPUT
+        run: ./dbt-common/Test/Test.sh >> $GITHUB_OUTPUT
               cat $GITHUB_OUTPUT 
                 
       
