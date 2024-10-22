@@ -12,7 +12,7 @@ jobs:
           repository: ${{ github.repository }}
           
       - name: Set up variables by branch
-        uses: ./.github/workflows/main.yml@main
+        uses: ./.github/workflows/action.yml
         with:
           MERGE_TARGET: 'main'
 
