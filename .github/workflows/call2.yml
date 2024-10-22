@@ -81,19 +81,21 @@ jobs:
   Script-file:
     runs-on: ubuntu-latest
     steps:
-      - name: permission
-        run: |
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: permission
+      run: |
               pwd
               ls -lah
               chmod +x test.sh 
               pwd
               ls -lah
         
-      - name: Set up variables by branch using Test script
-        id: setOutputsTest
-        env: 
-            MERGE_TARGET: 'main' 
-        run: ./Test/Test.sh >> $GITHUB_OUTPUT
+    - name: Set up variables by branch using Test script
+      id: setOutputsTest
+      env: 
+          MERGE_TARGET: 'main' 
+      run: ./Test/Test.sh >> $GITHUB_OUTPUT
               cat $GITHUB_OUTPUT 
                 
       
