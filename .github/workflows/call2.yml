@@ -82,7 +82,7 @@ jobs:
         id: setOutputsTest
         env: 
             MERGE_TARGET: 'main' 
-        run: ./Test_folder/Test.sh >> $GITHUB_OUTPUT
+        run: ./dbt-common/Test_folder/Test.sh >> $GITHUB_OUTPUT
                 
       
 
