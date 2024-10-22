@@ -77,12 +77,15 @@ jobs:
         run: |
           OUTPUTS_JSON='${{ needs.use-vars.outputs.all_outputs }}'
            echo "$OUTPUTS_JSON" | jq
-
+           
+  Script-file:
+    runs-on: ubuntu-latest
+    steps:
       - name: permission
         run: |
               pwd
               ls -lah
-              chmod +x test.sh
+              chmod +x ./Test/Test.sh 
               pwd
               ls -lah
         
