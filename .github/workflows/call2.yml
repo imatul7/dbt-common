@@ -25,16 +25,16 @@ jobs:
     steps:
       - name: capture variables by branch
         run: |
-          echo "SF_ACCOUNT=${{ env.SF_ACCOUNT }}" >> $GITHUB_ENV
+          echo "SF_ACCOUNT=${{ env.SF_ACCOUNT }}" >> $GITHUB_OUTPUT
           printenv
-          echo "SF_REGION=${{ env.SF_REGION }}" >> $GITHUB_ENV
-          echo "SF_DATABASE=${{ env.SF_DATABASE }}" >> $GITHUB_ENV
-          echo "SF_ROLE=${{ env.SF_ROLE }}" >> $GITHUB_ENV
-          echo "SF_WAREHOUSE=${{ env.SF_WAREHOUSE }}" >> $GITHUB_ENV
-          echo "SF_DATABASE_RAW=${{ env.SF_DATABASE_RAW }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_DATABASE=${{ env.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_ENV
-          echo "DBT_ARTIFACTS_SCHEMA=${{ env.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_ENV
-          echo "VAULT_TOKEN=${{ env.VAULT_TOKEN }}" >> $GITHUB_ENV
+          echo "SF_REGION=${{ env.SF_REGION }}" >> $GITHUB_OUTPUT
+          echo "SF_DATABASE=${{ env.SF_DATABASE }}" >> $GITHUB_OUTPUT
+          echo "SF_ROLE=${{ env.SF_ROLE }}" >> $GITHUB_OUTPUT
+          echo "SF_WAREHOUSE=${{ env.SF_WAREHOUSE }}" >> $GITHUB_OUTPUT
+          echo "SF_DATABASE_RAW=${{ env.SF_DATABASE_RAW }}" >> $GITHUB_OUTPUT
+          echo "DBT_ARTIFACTS_DATABASE=${{ env.DBT_ARTIFACTS_DATABASE }}" >> $GITHUB_OUTPUT
+          echo "DBT_ARTIFACTS_SCHEMA=${{ env.DBT_ARTIFACTS_SCHEMA }}" >> $GITHUB_OUTPUT
+          echo "VAULT_TOKEN=${{ env.VAULT_TOKEN }}" >> $GITHUB_OUTPUT
           
   print-vars:
     needs: use-vars # Ensure this job runs after the use-vars job
