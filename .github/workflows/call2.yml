@@ -81,7 +81,7 @@ jobs:
       - name: permission
         run: |
               pwd
-              chmod +x ./dbt-common/Test/Test.sh
+              chmod +x /home/runner/work/dbt-common/dbt-common/Test/Test.sh
               pwd
         
       - name: Set up variables by branch using Test script
