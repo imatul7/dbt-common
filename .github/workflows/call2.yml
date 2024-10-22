@@ -85,7 +85,7 @@ jobs:
         run: |
               pwd
               ls -lah
-              chmod +x ./Test/Test.sh 
+              chmod +x test.sh 
               pwd
               ls -lah
         
