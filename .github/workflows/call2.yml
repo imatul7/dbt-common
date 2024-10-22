@@ -87,7 +87,7 @@ jobs:
       run: |
               pwd
               ls -lah
-              chmod +x test.sh 
+              chmod +x ./Test_folder/Test.sh
               pwd
               ls -lah
         
@@ -95,7 +95,7 @@ jobs:
       id: setOutputsTest
       env: 
           MERGE_TARGET: 'main' 
-      run: ./Test/Test.sh >> $GITHUB_OUTPUT
+      run: ./Test_folder/Test.sh >> $GITHUB_OUTPUT
               cat $GITHUB_OUTPUT 
                 
       
