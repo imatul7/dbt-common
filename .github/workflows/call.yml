@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Capture variables by branch
         with:
           SF_ACCOUNT: ${{ needs.setup-env-vars-branch.outputs.SF_ACCOUNT }} 
           
