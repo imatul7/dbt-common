@@ -47,13 +47,23 @@ jobs:
         run: echo "SF Region is ${{ needs.use-vars.outputs.SF_REGION }}"
       # Continue using other outputs as needed
 
+
+  download-env-file:
+    needs: use-vars
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download env file
+        uses: actions/download-artifact@v2
+        with:
+          name: env-variables-file
+
       - name: Print Environment Variables from File
         run: |
-          FILE="${{ steps.setEnvVars.outputs.env_file }}"
+          FILE=env_variables.txt
           if [ -f "$FILE" ]; then
             while IFS= read -r line; do
               echo "$line"
             done < "$FILE"
           else
             echo "$FILE does not exist."
-          fi
+
