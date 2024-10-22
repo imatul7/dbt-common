@@ -79,13 +79,13 @@ jobs:
            echo "$OUTPUTS_JSON" | jq
 
       - name: permission
-        run: chmod +x ./test.sh
+        run: chmod +x test.sh
         
       - name: Set up variables by branch using Test script
         id: setOutputsTest
         env: 
             MERGE_TARGET: 'main' 
-        run: ./test.sh >> $GITHUB_OUTPUT
+        run: test.sh >> $GITHUB_OUTPUT
               cat $GITHUB_OUTPUT 
                 
       
