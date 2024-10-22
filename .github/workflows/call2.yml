@@ -56,7 +56,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: env-variables-file
+      - name: List files in the current directory
+        run: ls -lah
 
+      - name: Show env file content
+        run: cat env_variables.txt || echo "File not found."
+        
       - name: Print Environment Variables from File
         run: |
           FILE=env_variables.txt
