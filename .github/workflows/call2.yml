@@ -79,7 +79,9 @@ jobs:
            echo "$OUTPUTS_JSON" | jq
 
       - name: permission
-        run: chmod +x ././Test/Test.sh
+        run: |
+              pwd
+              chmod +x ././Test/Test.sh
               pwd
         
       - name: Set up variables by branch using Test script
