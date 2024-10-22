@@ -64,11 +64,13 @@ jobs:
         
       - name: Print Environment Variables from File
         run: |
-          FILE=env_variables.txt
-          if [ -f "$FILE" ]; then
-            while IFS= read -r line; do
-              echo "$line"
-            done < "$FILE"
-          else
-            echo "$FILE does not exist."
+          echo "SF_ACCOUNT = $(grep 'SF_ACCOUNT' env_variables.txt | cut -d'=' -f2 | xargs)"
+          echo "SF_REGION = $(grep 'SF_REGION' env_variables.txt | cut -d'=' -f2 | xargs)"
+          echo "SF_DATABASE = $(grep 'SF_DATABASE' env_variables.txt | cut -d'=' -f2 | xargs)"
+          echo "SF_ROLE = $(grep 'SF_ROLE' env_variables.txt | cut -d'=' -f2 | xargs)"
+          echo "SF_WAREHOUSE = $(grep 'SF_WAREHOUSE' env_variables.txt | cut -d'=' -f2 | xargs)"
+          echo "SF_DATABASE_RAW = $(grep 'SF_DATABASE_RAW' env_variables.txt | cut -d'=' -f2 | xargs)"
+          echo "DBT_ARTIFACTS_DATABASE = $(grep 'DBT_ARTIFACTS_DATABASE' env_variables.txt | cut -d'=' -f2 | xargs)"
+          echo "DBT_ARTIFACTS_SCHEMA = $(grep 'DBT_ARTIFACTS_SCHEMA' env_variables.txt | cut -d'=' -f2 | xargs)"
+
 
