@@ -15,9 +15,6 @@ jobs:
       - name: Print SF Account 
         run: echo ${{ needs.setup-env-vars-branch.outputs.sf_account }}
 
-      - name: Print SF Account Combined
-        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_account_combined }}
-
       - name: Print SF Region
         run: echo ${{ needs.setup-env-vars-branch.outputs.sf_region }}
 
