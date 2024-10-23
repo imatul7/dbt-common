@@ -5,66 +5,11 @@ on:
       MERGE_TARGET:
         required: true
         type: string
-    outputs:
-      sf_account:
-        description: "The SF account"
-        value: ${{ jobs.setup-env-vars.outputs.SF_ACCOUNT }}
-      sf_region:
-        description: "The SF Region"
-        value: ${{ jobs.setup-env-vars.outputs.SF_REGION }}
-      sf_database:
-        description: "The SF Database"
-        value: ${{ jobs.setup-env-vars.outputs.SF_DATABASE }}
-      sf_role:
-        description: "The SF Role"
-        value: ${{ jobs.setup-env-vars.outputs.SF_ROLE }}
-      sf_warehouse:
-        description: "The SF Warehouse"
-        value: ${{ jobs.setup-env-vars.outputs.SF_WAREHOUSE }}
-      sf_database_raw:
-        description: "The SF Database Raw"
-        value: ${{ jobs.setup-env-vars.outputs.SF_DATABASE_RAW }}
-      dbt_artifacts_database:
-        description: "DBT Artifacts Database"
-        value: ${{ jobs.setup-env-vars.outputs.DBT_ARTIFACTS_DATABASE }}
-      dbt_artifacts_schema:
-        description: "DBT Artifacts Schema"
-        value: ${{ jobs.setup-env-vars.outputs.DBT_ARTIFACTS_SCHEMA }}
-
 jobs:
   setup-env-vars:
-    runs-on: ubuntu-latest
-    outputs:
-      SF_ACCOUNT: ${{ steps.setOutputs.outputs.SF_ACCOUNT }}
-      SF_REGION: ${{ steps.setOutputs.outputs.SF_REGION }}
-      SF_DATABASE: ${{ steps.setOutputs.outputs.SF_DATABASE }}
-      SF_ROLE: ${{ steps.setOutputs.outputs.SF_ROLE }}
-      SF_WAREHOUSE: ${{ steps.setOutputs.outputs.SF_WAREHOUSE }}
-      SF_DATABASE_RAW: ${{ steps.setOutputs.outputs.SF_DATABASE_RAW }}
-      DBT_ARTIFACTS_DATABASE: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_DATABASE }}
-      DBT_ARTIFACTS_SCHEMA: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_SCHEMA }}
-    steps:
-      - name: Set up variables by branch
-        id: setOutputs
-        env:
-          MERGE_TARGET: ${{ inputs.MERGE_TARGET }}
-        run: |
-          echo "SF_ACCOUNT=hardcoded-account" >> $GITHUB_OUTPUT
-          echo "SF_REGION=hardcoded-region" >> $GITHUB_OUTPUT
-          #echo "SF_DATABASE=hardcoded-database" >> $GITHUB_OUTPUT
-          #echo "SF_ROLE=hardcoded-role" >> $GITHUB_OUTPUT
-          #echo "SF_WAREHOUSE=hardcoded-warehouse" >> $GITHUB_OUTPUT
-          #echo "SF_DATABASE_RAW=hardcoded-database-raw" >> $GITHUB_OUTPUT
-          #echo "DBT_ARTIFACTS_DATABASE=hardcoded-dbt-artifacts-db" >> $GITHUB_OUTPUT
-          #echo "DBT_ARTIFACTS_SCHEMA=hardcoded-dbt-artifacts-schema" >> $GITHUB_OUTPUT
-          #echo "SF_ACCOUNT=hardcoded-account" >> $GITHUB_ENV
-          #echo "SF_REGION=hardcoded-region" >> $GITHUB_ENV
-          #echo "SF_DATABASE=hardcoded-database" >> $GITHUB_ENV
-          #echo "SF_ROLE=hardcoded-role" >> $GITHUB_ENV
-          #echo "SF_WAREHOUSE=hardcoded-warehouse" >> $GITHUB_ENV
-          #echo "SF_DATABASE_RAW=hardcoded-database-raw" >> $GITHUB_ENV
-          #echo "DBT_ARTIFACTS_DATABASE=hardcoded-dbt-artifacts-db" >> $GITHUB_ENV
-          #echo "DBT_ARTIFACTS_SCHEMA=hardcoded-dbt-artifacts-schema" >> $GITHUB_ENV
+    uses: ./.github/workflows/setup-env-vars-branch.yaml
+    with:
+      MERGE_TARGET: ${{ inputs.MERGE_TARGET }}
            
   dbt-run:
     runs-on: ubuntu-latest
@@ -72,5 +17,7 @@ jobs:
     steps:   
       - name: DBT Run
         id: run
-        run: |
-          echo "${{ needs.setup-env-vars.outputs.SF_ACCOUNT }}.${{ needs.setup-env-vars.outputs.SF_REGION }}"
+        env:
+          SF_ACCOUNT: ${{ needs.setup-env-vars.SF_ACCOUNT }}.${{ needs.setup-env-vars.SF_REGION }}
+        run:
+          echo "$SF_Account"
