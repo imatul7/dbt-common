@@ -1,0 +1,70 @@
+name: DBT Run and Update PR Status
+
+    outputs:
+      sf_account:
+        description: "The SF account"
+        value: ${{ jobs.setup-env-vars.outputs.SF_ACCOUNT }}
+      sf_region:
+        description: "The SF Region"
+        value: ${{ jobs.setup-env-vars.outputs.SF_REGION }}
+      sf_database:
+        description: "The SF Database"
+        value: ${{ jobs.setup-env-vars.outputs.SF_DATABASE }}
+      sf_role:
+        description: "The SF Role"
+        value: ${{ jobs.setup-env-vars.outputs.SF_ROLE }}
+      sf_warehouse:
+        description: "The SF Warehouse"
+        value: ${{ jobs.setup-env-vars.outputs.SF_WAREHOUSE }}
+      sf_database_raw:
+        description: "The SF Database Raw"
+        value: ${{ jobs.setup-env-vars.outputs.SF_DATABASE_RAW }}
+      dbt_artifacts_database:
+        description: "DBT Artifacts Database"
+        value: ${{ jobs.setup-env-vars.outputs.DBT_ARTIFACTS_DATABASE }}
+      dbt_artifacts_schema:
+        description: "DBT Artifacts Schema"
+        value: ${{ jobs.setup-env-vars.outputs.DBT_ARTIFACTS_SCHEMA }}
+
+jobs:
+  pull-env-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      SF_ACCOUNT: ${{ steps.setOutputs.outputs.SF_ACCOUNT }}
+      SF_REGION: ${{ steps.setOutputs.outputs.SF_REGION }}
+      SF_DATABASE: ${{ steps.setOutputs.outputs.SF_DATABASE }}
+      SF_ROLE: ${{ steps.setOutputs.outputs.SF_ROLE }}
+      SF_WAREHOUSE: ${{ steps.setOutputs.outputs.SF_WAREHOUSE }}
+      SF_DATABASE_RAW: ${{ steps.setOutputs.outputs.SF_DATABASE_RAW }}
+      DBT_ARTIFACTS_DATABASE: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_DATABASE }}
+      DBT_ARTIFACTS_SCHEMA: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_SCHEMA }}
+    steps:
+      - name: Set up variables by branch
+        id: setOutputs
+        env:
+          MERGE_TARGET: ${{ inputs.MERGE_TARGET }}
+        run: ./ci/env_by_branch.sh >> $GITHUB_OUTPUT ### Need Modfification to this
+  dbt-run:
+    runs-on: ubuntu-latest
+    needs: pull-env-vars
+    steps:   
+      - name: DBT Run
+        id: run
+        env:
+          SF_ACCOUNT: ${{ needs.pull-env-vars.SF_ACCOUNT }}.${{ needs.pull-env-vars.SF_REGION }}
+          SF_USERNAME: ${{ needs.pull-env-vars.SF_USERNAME }}
+          SF_PASSWORD: ${{ needs.pull-env-vars.SF_PASSWORD }}
+          SF_DATABASE: ${{ needs.pull-env-vars.SF_DATABASE }}
+          SF_ROLE: ${{ needs.pull-env-vars.SF_ROLE }}
+          SF_WAREHOUSE: ${{ needs.pull-env-vars.SF_WAREHOUSE }}
+          SF_SCHEMA: ${{ needs.pull-env-vars.SF_SCHEMA }}
+          DATABASE_RAW: ${{ needs.pull-env-vars.DATABASE_RAW }}
+          DATABASE_HUB: ${{ needs.pull-env-vars.DATABASE_HUB }}
+          SF_QUERYTAG: "${{ needs.pull-env-vars.SF_ROLE }}_PR_${{ github.event.number }}_${{github.run_number}}"
+          SF_ENV: ${{ needs.pull-env-vars.SF_ENV }}
+          AIRFLOW_RUN: 'false'
+          DBT_ARTIFACTS_DATABASE: ${{ needs.pull-env-vars.DBT_ARTIFACTS_DATABASE }}
+          DBT_ARTIFACTS_SCHEMA: ${{ needs.pull-env-vars.DBT_ARTIFACTS_SCHEMA }}
+          DBT_PATH: ${{ needs.pull-env-vars.DBT_PATH }}
+        run: ./dbt-run.sh
+        continue-on-error: true
