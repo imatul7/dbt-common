@@ -21,9 +21,9 @@ on:
       sf_warehouse:
         description: "The SF Warehouse"
         value: ${{ jobs.setup-env-vars.outputs.SF_WAREHOUSE }}
-      sf_database_raw:
+      database_raw:
         description: "The SF Database Raw"
-        value: ${{ jobs.setup-env-vars.outputs.SF_DATABASE_RAW }}
+        value: ${{ jobs.setup-env-vars.outputs.DATABASE_RAW }}
       dbt_artifacts_database:
         description: "DBT Artifacts Database"
         value: ${{ jobs.setup-env-vars.outputs.DBT_ARTIFACTS_DATABASE }}
@@ -47,12 +47,12 @@ jobs:
           SF_USERNAME: ${{ needs.setup-env-vars.SF_USERNAME }}
           SF_PASSWORD: ${{ needs.setup-env-vars.SF_PASSWORD }}
           SF_DATABASE: ${{ needs.setup-env-vars.SF_DATABASE }}
-          SF_ROLE: ${{ needs.setup-env-vars.SF_ROLE }}
-          SF_WAREHOUSE: ${{ needs.setup-env-vars.SF_WAREHOUSE }}
-          SF_SCHEMA: ${{ needs.setup-env-vars.SF_SCHEMA }}
-          DATABASE_RAW: ${{ needs.setup-env-vars.DATABASE_RAW }}
+          SF_ROLE: ${{ needs.setup-env-vars.outputs.sf_role }}
+          SF_WAREHOUSE: ${{ needs.setup-env-vars.outputs.sf_warehouse }}
+          SF_SCHEMA: ${{ needs.setup-env-vars.outputs.sf_schema }}
+          DATABASE_RAW: ${{ needs.setup-env-vars.outputs.DATABASE_RAW }}
           DATABASE_HUB: ${{ needs.setup-env-vars.DATABASE_HUB }}
-          SF_QUERYTAG: "${{ needs.setup-env-vars.SF_ROLE }}_PR_${{ github.event.number }}_${{github.run_number}}"
+          SF_QUERYTAG: ${{ needs.setup-env-vars.outputs.sf_role }}_PR_${{ github.event.number }}_${{github.run_number}}
           SF_ENV: ${{ needs.setup-env-vars.SF_ENV }}
           AIRFLOW_RUN: 'false'
           DBT_ARTIFACTS_DATABASE: ${{ needs.setup-env-vars.DBT_ARTIFACTS_DATABASE }}
