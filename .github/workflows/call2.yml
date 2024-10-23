@@ -99,6 +99,7 @@ jobs:
             output=$(./Test_folder/Test.sh)
             echo $output
             cat "${GITHUB_OUTPUT}"
+            echo "End of Run"
                 
       
 
