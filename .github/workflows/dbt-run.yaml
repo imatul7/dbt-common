@@ -71,9 +71,8 @@ jobs:
     steps:   
       - name: DBT Run
         id: run
-        run:
-          echo ${{ needs.setup-env-vars.SF_ACCOUNT }}.${{ needs.pull-env-vars.SF_REGION }}
-          #SF_ACCOUNT: ${{ needs.setup-env-vars.SF_ACCOUNT }}.${{ needs.pull-env-vars.SF_REGION }}
+        env:
+          SF_ACCOUNT: ${{ needs.setup-env-vars.SF_ACCOUNT }}.${{ needs.pull-env-vars.SF_REGION }}
           #SF_USERNAME: ${{ needs.setup-env-vars.SF_USERNAME }}
           #SF_PASSWORD: ${{ needs.setup-env-vars.SF_PASSWORD }}
           #SF_DATABASE: ${{ needs.setup-env-vars.SF_DATABASE }}
