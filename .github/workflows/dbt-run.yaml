@@ -9,9 +9,6 @@ on:
       sf_account:
         description: "The SF account"
         value: ${{ jobs.setup-env-vars.outputs.SF_ACCOUNT }}
-      sf_account_combined:
-        description: "The SF account"
-        value: ${{ jobs.setup-env-vars.outputs.SF_ACCOUNT_COMBINED }}
       sf_region:
         description: "The SF Region"
         value: ${{ jobs.setup-env-vars.outputs.SF_REGION }}
@@ -46,7 +43,6 @@ jobs:
       SF_DATABASE_RAW: ${{ steps.setOutputs.outputs.SF_DATABASE_RAW }}
       DBT_ARTIFACTS_DATABASE: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_DATABASE }}
       DBT_ARTIFACTS_SCHEMA: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_SCHEMA }}
-      SF_ACCOUNT_COMBINED: ${{ steps.setOutputs.outputs.SF_ACCOUNT_COMBINED }}
     steps:
       - name: Set up variables by branch
         id: setOutputs
@@ -55,7 +51,6 @@ jobs:
         run: |
           echo "SF_ACCOUNT=hardcoded-account" >> $GITHUB_OUTPUT
           echo "SF_REGION=hardcoded-region" >> $GITHUB_OUTPUT
-          echo "SF_ACCOUNT_COMBINED=hardcoded-account.hardcoded.region" >> $GITHUB_OUTPUT
           #echo "SF_DATABASE=hardcoded-database" >> $GITHUB_OUTPUT
           #echo "SF_ROLE=hardcoded-role" >> $GITHUB_OUTPUT
           #echo "SF_WAREHOUSE=hardcoded-warehouse" >> $GITHUB_OUTPUT
@@ -78,6 +73,4 @@ jobs:
       - name: DBT Run
         id: run
         run: |
-          echo "${{ needs.setup-env-vars.outputs.SF_ACCOUNT }}"
-          echo "${{ needs.setup-env-vars.outputs.SF_REGION }}"
           echo "${{ needs.setup-env-vars.outputs.SF_ACCOUNT }}.${{ needs.setup-env-vars.outputs.SF_REGION }}"
