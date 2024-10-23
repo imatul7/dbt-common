@@ -5,7 +5,7 @@ on:
 
 jobs:
   setup-env-vars-branch:
-    uses: ./.github/workflows/action.yml
+    uses: ./.github/workflows/dbt-run.yml
     with:
         MERGE_TARGET: 'main'
           
@@ -13,8 +13,8 @@ jobs:
     needs: [setup-env-vars-branch] 
     runs-on: ubuntu-latest
     steps:
-      - name: Print SF Account
-        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_account }}
+      - name: Print SF Account & SF Region
+        run: echo ${{ needs.setup-env-vars-branch.outputs.sf_account }}.${{ needs.setup-env-vars-branch.outputs.sf_region }}
 
       - name: Print SF Region
         run: echo ${{ needs.setup-env-vars-branch.outputs.sf_region }}
