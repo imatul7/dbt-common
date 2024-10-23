@@ -96,7 +96,7 @@ jobs:
       env: 
           MERGE_TARGET: 'main' 
       run: ./Test_folder/Test.sh >> $GITHUB_OUTPUT
-              cat $GITHUB_OUTPUT 
+              echo $GITHUB_OUTPUT 
                 
       
 
