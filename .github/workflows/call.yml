@@ -5,7 +5,7 @@ on:
 
 jobs:
   setup-env-vars-branch:
-    uses: ./.github/workflows/dbt-run.yml
+    uses: ./.github/workflows/dbt-run.yaml
     with:
         MERGE_TARGET: 'main'
           
