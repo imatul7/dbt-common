@@ -71,8 +71,8 @@ jobs:
     steps:   
       - name: DBT Run
         id: run
-        run:
-          echo "${{ needs.setup-env-vars.SF_ACCOUNT }}.${{ needs.setup-env-vars.SF_REGION }}"
+        env:
+          SF_ACCOUNT: ${{ needs.setup-env-vars.SF_ACCOUNT }}.${{ needs.setup-env-vars.SF_REGION }}
           #SF_USERNAME: ${{ needs.setup-env-vars.SF_USERNAME }}
           #SF_PASSWORD: ${{ needs.setup-env-vars.SF_PASSWORD }}
           #SF_DATABASE: ${{ needs.setup-env-vars.SF_DATABASE }}
@@ -87,3 +87,5 @@ jobs:
           #DBT_ARTIFACTS_DATABASE: ${{ needs.setup-env-vars.DBT_ARTIFACTS_DATABASE }}
           #DBT_ARTIFACTS_SCHEMA: ${{ needs.setup-env-vars.DBT_ARTIFACTS_SCHEMA }}
           #DBT_PATH: ${{ needs.setup-env-vars.DBT_PATH }}
+        run:
+          echo "$SF_ACCOUNT"
