@@ -5,6 +5,31 @@ on:
       MERGE_TARGET:
         required: true
         type: string
+    outputs:
+      sf_account:
+        description: "The SF account"
+        value: ${{ jobs.setup-env-vars.outputs.SF_ACCOUNT }}
+      sf_region:
+        description: "The SF Region"
+        value: ${{ jobs.setup-env-vars.outputs.SF_REGION }}
+      sf_database:
+        description: "The SF Database"
+        value: ${{ jobs.setup-env-vars.outputs.SF_DATABASE }}
+      sf_role:
+        description: "The SF Role"
+        value: ${{ jobs.setup-env-vars.outputs.SF_ROLE }}
+      sf_warehouse:
+        description: "The SF Warehouse"
+        value: ${{ jobs.setup-env-vars.outputs.SF_WAREHOUSE }}
+      sf_database_raw:
+        description: "The SF Database Raw"
+        value: ${{ jobs.setup-env-vars.outputs.SF_DATABASE_RAW }}
+      dbt_artifacts_database:
+        description: "DBT Artifacts Database"
+        value: ${{ jobs.setup-env-vars.outputs.DBT_ARTIFACTS_DATABASE }}
+      dbt_artifacts_schema:
+        description: "DBT Artifacts Schema"
+        value: ${{ jobs.setup-env-vars.outputs.DBT_ARTIFACTS_SCHEMA }}
 jobs:
   setup-env-vars:
     uses: ./.github/workflows/setup-env-vars-branch.yaml
