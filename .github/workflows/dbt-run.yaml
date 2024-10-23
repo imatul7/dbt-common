@@ -46,6 +46,7 @@ jobs:
       SF_DATABASE_RAW: ${{ steps.setOutputs.outputs.SF_DATABASE_RAW }}
       DBT_ARTIFACTS_DATABASE: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_DATABASE }}
       DBT_ARTIFACTS_SCHEMA: ${{ steps.setOutputs.outputs.DBT_ARTIFACTS_SCHEMA }}
+      SF_ACCOUNT_COMBINED: ${{ steps.setOutputs.outputs.SF_ACCOUNT_COMBINED }}
     steps:
       - name: Set up variables by branch
         id: setOutputs
@@ -68,6 +69,7 @@ jobs:
           echo "SF_DATABASE_RAW=hardcoded-database-raw" >> $GITHUB_ENV
           echo "DBT_ARTIFACTS_DATABASE=hardcoded-dbt-artifacts-db" >> $GITHUB_ENV
           echo "DBT_ARTIFACTS_SCHEMA=hardcoded-dbt-artifacts-schema" >> $GITHUB_ENV
+          echo "SF_ACCOUNT_COMBINED=hardcoded-account.hardcoded.region" >> $GITHUB_OUTPUT
   dbt-run:
     runs-on: ubuntu-latest
     needs: [setup-env-vars]
@@ -75,4 +77,4 @@ jobs:
       - name: DBT Run
         id: run
         run:
-          echo "${{ needs.setup-env-vars.SF_ACCOUNT }}.${{ needs.setup-env-vars.SF_REGION }}"
+          echo "${{ needs.setup-env-vars.SF_ACCOUNT_COMBINED }}"
