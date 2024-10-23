@@ -13,7 +13,7 @@ jobs:
     needs: [setup-env-vars-branch] 
     runs-on: ubuntu-latest
     steps:
-      - name: Print SF Account & SF Region
+      - name: Print SF Account 
         run: echo ${{ needs.setup-env-vars-branch.outputs.sf_account }}.${{ needs.setup-env-vars-branch.outputs.sf_region }}
 
       - name: Print SF Region
