@@ -78,3 +78,4 @@ jobs:
         id: run
         run:
           echo "${{ needs.setup-env-vars.outputs.SF_ACCOUNT_COMBINED }}"
+          echo "${{ needs.setup-env-vars.outputs.SF_ACCOUNT }}"
