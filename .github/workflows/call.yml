@@ -8,7 +8,6 @@ jobs:
     uses: ./.github/workflows/dbt-run.yaml
     with:
         MERGE_TARGET: 'main'
-          
   print-vars:
     needs: [setup-env-vars-branch] 
     runs-on: ubuntu-latest
