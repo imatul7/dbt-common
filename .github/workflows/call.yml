@@ -18,7 +18,6 @@ jobs:
       - name: Print SF Region
         run: echo ${{ needs.setup-env-vars-branch.outputs.sf_region }}
 
-
       - name: Print SF Database
         run: echo ${{ needs.setup-env-vars-branch.outputs.sf_database }}
 
