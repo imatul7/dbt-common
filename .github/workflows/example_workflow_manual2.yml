@@ -1,29 +1,30 @@
-name: Example Workflow on manual repo Changes
+name: Example Workflow on repo Changes
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
-  your_job:
+  check_changes:
     runs-on: ubuntu-latest
+    outputs:
+      dbt_common_changed: ${{ steps.check_dbt_common.outputs.dbt_common_changed }}
     steps:
       - uses: actions/checkout@v3
-      - name: Check for changes in specific paths
-        id: check_changes
+      - name: Check for changes in dbt_common
+        id: check_dbt_common
         run: |
-          if [ $(git rev-list --count HEAD) -gt 1 ]; then
-            git diff --quiet HEAD HEAD~1 -- dbt_common
-            if [ $? -eq 1 ]; then
-              echo "::set-output name=changes_detected::true"
-            else
-              echo "::set-output name=changes_detected::false"
-            fi
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'dbt_common/'; then
+            echo "::set-output name=dbt_common_changed::true"
           else
-            echo "There's only one commit or a manual trigger, assuming changes."
-            echo "::set-output name=changes_detected::true"
+            echo "::set-output name=dbt_common_changed::false"
           fi
-      - name: Run a script or command if changes detected
-        if: steps.check_changes.outputs.changes_detected == 'true'
-        run: echo "Changes detected in repo dbt_common"
+
+  your_job:
+    needs: check_changes
+    runs-on: ubuntu-latest
+    if: needs.check_changes.outputs.dbt_common_changed == 'true'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run a script or command
+        run: echo "Changes detected in repo dbt_common, proceeding with job..."
+      # Add your subsequent steps here. They will only run if changes were detected in dbt_common.
