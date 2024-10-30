@@ -13,21 +13,12 @@ jobs:
       - name: Check for changes in dbt_common
         id: check_dbt_common
         run: |
-          COMMIT_COUNT=$(git rev-list --count HEAD)
+          LAST_COMMIT=$(git rev-list -n 1 HEAD^||echo "")
+        
           
-          # Use an empty tree object if this is the first commit; otherwise use the previous commit.
-          if [[ "$COMMIT_COUNT" -le 1 ]]; then
-            BASE_COMMIT=$(git hash-object -t tree /dev/null)
-          else
-            BASE_COMMIT=HEAD^
-          fi
-          
-          CHANGES=$(git diff --name-only $BASE_COMMIT HEAD -- 'Test_folder/**')
-          if [[ -n "$CHANGES" ]]; then
-            echo "Changes detected in 'Test_folder/'"
+          if git diff --name-only $LAST_COMMIT HEAD | grep 'Test_folder/**'; then
             echo "dbt_common_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "No changes detected in 'Test_folder/'"
             echo "dbt_common_changed=false" >> $GITHUB_OUTPUT
           fi
 
