@@ -13,10 +13,12 @@ jobs:
       - name: Check for changes in dbt_common
         id: check_dbt_common
         run: |
-          LAST_COMMIT=$(git rev-list -n 1 HEAD^||echo "")
+          git fetch --prune --unshallow
+          LAST_COMMIT=$(git rev-list -n 1 HEAD^ || echo "")
+          echo "Last commit: $LAST_COMMIT"
         
           
-          if git diff --name-only $LAST_COMMIT HEAD | grep 'Test_folder/**'; then
+          if [[ -z "$LAST_COMMIT" ]] || git diff --name-only $LAST_COMMIT HEAD -- 'Test_folder/**'; then
             echo "dbt_common_changed=true" >> $GITHUB_OUTPUT
           else
             echo "dbt_common_changed=false" >> $GITHUB_OUTPUT
