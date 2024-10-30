@@ -10,15 +10,16 @@ jobs:
       dbt_common_changed: ${{ steps.check_dbt_common.outputs.dbt_common_changed }}
     steps:
       - uses: actions/checkout@v3
+        with: 
+          ref: ${{github.sha}}
+          fetch-depth: 2
       - name: Check for changes in dbt_common
         id: check_dbt_common
         run: |
-          git fetch --prune --unshallow
-          LAST_COMMIT=$(git rev-list -n 1 HEAD^ || echo "")
-          echo "Last commit: $LAST_COMMIT"
+          diff=$(git diff --name-only HEAD^ HEAD)
         
           
-          if [[ -z "$LAST_COMMIT" ]] || git diff --name-only $LAST_COMMIT HEAD -- 'Test_folder/**'; then
+          if [[ $diff =~ "Test_folder/".* ]] ; then
             echo "dbt_common_changed=true" >> $GITHUB_OUTPUT
           else
             echo "dbt_common_changed=false" >> $GITHUB_OUTPUT
