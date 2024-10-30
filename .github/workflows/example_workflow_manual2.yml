@@ -20,7 +20,7 @@ jobs:
   your_job:
     needs: check_changes
     runs-on: ubuntu-latest
-    if: env.dbt_common_changed == 'true'
+    if: $dbt_common_changed == 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Run a script or command
