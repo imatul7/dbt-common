@@ -8,28 +8,29 @@ on:
     paths:
       - 'Test_folder/**'
   workflow_dispatch:
-
+  
 jobs:
   check_changes:
     runs-on: ubuntu-latest
     outputs:
-      test_folder_changed: ${{ steps.check_test_folder.outputs.test_folder_changed }}
+      dbt_common_changed: ${{ steps.check_dbt_common.outputs.dbt_common_changed }}
     steps:
       - uses: actions/checkout@v3
-      - name: Check for changes in Test_folder
-        id: check_test_folder
+      - name: Check for changes in dbt_common
+        id: check_dbt_common
         run: |
-          echo "test_folder_changed=false" >> $GITHUB_ENV
-          if git diff --name-only 5decc48aba0041605b9ca7eca9eb333929d73e98 | grep -q 'Test_folder/'; then
-            echo "test_folder_changed=true" >> $GITHUB_ENV
-        shell: bash
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'Test_folder/**'; then
+            echo "::set-output name=dbt_common_changed::true"
+          else
+            echo "::set-output name=dbt_common_changed::false"
+          fi
 
   your_job:
     needs: check_changes
     runs-on: ubuntu-latest
-    if: needs.check_changes.outputs.test_folder_changed == 'true'
+    if: needs.check_changes.outputs.dbt_common_changed == 'true'
     steps:
       - uses: actions/checkout@v3
-      - name: Run a script or command if Test_folder changed
-        run: echo "Changes detected in the Test_folder, proceeding with job..."
-      # Add your subsequent steps here. They will only run if changes were detected in Test_folder.
+      - name: Run a script or command
+        run: echo "Changes detected in repo dbt_common, proceeding with job..."
+      # Add your subsequent steps here. They will only run if changes were detected in dbt_common.
