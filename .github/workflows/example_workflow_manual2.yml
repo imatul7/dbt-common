@@ -6,21 +6,23 @@ on:
 jobs:
   check_changes:
     runs-on: ubuntu-latest
+    outputs:
+      dbt_common_changed: ${{ steps.check_dbt_common.outputs.dbt_common_changed }}
     steps:
       - uses: actions/checkout@v3
       - name: Check for changes in dbt_common
         id: check_dbt_common
         run: |
           if git diff --name-only HEAD^ HEAD | grep -q 'Test_folder/**'; then
-            echo "dbt_common_changed=true" >> $GITHUB_ENV
+            echo "dbt_common_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "dbt_common_changed=false" >> $GITHUB_ENV
+            echo "dbt_common_changed=false" >> $GITHUB_OUTPUT
           fi
 
   your_job:
     needs: check_changes
     runs-on: ubuntu-latest
-    if: $dbt_common_changed == 'true'
+    if: needs.check_changes.outputs.dbt_common_changed== 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Run a script or command
