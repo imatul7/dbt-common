@@ -27,7 +27,7 @@ jobs:
   your_job:
     needs: check_changes
     runs-on: ubuntu-latest
-    if: needs.check_changes.outputs.dbt_common_changed== 'true'
+    if: needs.check_changes.outputs.dbt_common_changed == 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Run a script or command
