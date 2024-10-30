@@ -1,34 +1,26 @@
 name: Manual Workflow on repo Changes
 
 on:
-  push:
-    paths:
-      - 'Test_folder/**'
-  pull_request:
-    paths:
-      - 'Test_folder/**'
   workflow_dispatch:
   
 jobs:
   check_changes:
     runs-on: ubuntu-latest
-    outputs:
-      dbt_common_changed: ${{ steps.check_dbt_common.outputs.dbt_common_changed }}
     steps:
       - uses: actions/checkout@v3
       - name: Check for changes in dbt_common
         id: check_dbt_common
         run: |
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'Test_folder/**'; then
-            echo "::set-output name=dbt_common_changed::true"
+          if git diff --name-only HEAD^ HEAD | grep -q 'Test_folder/**'; then
+            echo "dbt_common_changed=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=dbt_common_changed::false"
+            echo "dbt_common_changed=false" >> $GITHUB_ENV
           fi
 
   your_job:
     needs: check_changes
     runs-on: ubuntu-latest
-    if: needs.check_changes.outputs.dbt_common_changed == 'true'
+    if: env.dbt_common_changed == 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Run a script or command
