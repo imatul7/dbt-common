@@ -349,3 +349,129 @@ jobs:
           echo "This job will 'pause' until a required reviewer from the 'Certified Model Review' environment approves it."
           echo "The PR will be blocked from merging until this approval is given."
 
+
+
+
+
+
+#!/bin/bash
+set -e # Exit on error
+set -o pipefail # Fail on a pipe error
+
+echo "Starting Certified Model Check..."
+
+# 1. Define the certified tag string to look for
+# UPDATE: This regex now matches both "TRUE" and 'TRUE'
+CERTIFIED_TAG_PATTERN="IS_CERTIFIED:[[:space:]]*['\"]TRUE['\"]"
+
+# 2. Get variables from workflow environment
+base_sha="$BASE_SHA"
+head_sha="$HEAD_SHA"
+domain_owners="$DOMAIN_OWNERS_LIST"
+
+# Check that variables are set
+if [ -z "$base_sha" ]; then
+  echo "::error:: BASE_SHA environment variable is not set."
+  exit 1
+fi
+if [ -z "$head_sha" ]; then
+  echo "::error:: HEAD_SHA environment variable is not set."
+  exit 1
+fi
+if [ -z "$domain_owners" ]; then
+  echo "::error:: DOMAIN_OWNERS_LIST environment variable is not set."
+  exit 1
+fi
+
+# 3. Get list of all changed files using the exact SHAs
+echo "Finding diff between base (${base_sha}) and head (${head_sha})"
+
+# Find the common ancestor (merge-base) of the two commits
+merge_base=$(git merge-base "$base_sha" "$head_sha")
+echo "Calculated merge-base: $merge_base"
+
+# Diff from the merge-base to the HEAD of the PR
+diff_files=$(git diff --name-only "$merge_base" "$head_sha")
+
+if [ -z "$diff_files" ]; then
+  echo "No files changed."
+  echo "requires_review=false" >> "$GITHUB_OUTPUT"
+  exit 0
+fi
+
+echo "Changed files:"
+echo "$diff_files"
+
+requires_review=false
+
+# 4. Loop through each changed file
+while IFS= read -r file; do
+  
+  # ---
+  # Case 1: A model's .sql file was changed.
+  # ---
+  if [[ "$file" == "dbt/models/"*".sql" ]]; then
+    echo "Checking changed SQL model: $file"
+    model_dir=$(dirname "$file")
+    model_name=$(basename "$file" .sql)
+    
+    # Define directories to search for YML files
+    search_dirs=("$model_dir" "$(dirname "$model_dir")")
+    unique_search_dirs=($(printf "%s\n" "${search_dirs[@]}" | sort -u))
+
+    for dir in "${unique_search_dirs[@]}"; do
+      if [ -d "$dir" ]; then
+        for yml_file in "$dir"/*.yml; do
+          if [ -f "$yml_file" ]; then
+            echo "  Checking corresponding config: $yml_file"
+            
+            # Use awk to find the model's specific block and check for the tag
+            is_certified=$(awk -v model="$model_name" -v tag="$CERTIFIED_TAG_PATTERN" '
+              BEGIN { RS = "\n[[:space:]]*- name:" }
+              $0 ~ "^[[:space:]]*" model "[[:space:]]*(\n|$)" {
+                if ($0 ~ tag) {
+                  print "true"
+                  exit
+                }
+              }
+            ' "$yml_file")
+            
+            if [ "$is_certified" == "true" ]; then
+               echo "  Found model '$model_name' with certified tag in '$yml_file'. Triggering review."
+               requires_review=true
+               break 2 # Break out of both yml_file and dir loops
+            fi
+          fi
+        done
+      fi
+    done
+  
+  # ---
+  # Case 2: A .yml config file was changed directly.
+  # ---
+  elif [[ "$file" == "dbt/models/"*".yml" ]]; then
+    echo "Checking changed YML config: $file"
+    # Check if the tag exists *anywhere* in the changed file
+    if grep -q -E "$CERTIFIED_TAG_PATTERN" "$file"; then
+      echo "  Found certified tag in changed YML. Triggering review."
+      requires_review=true
+    fi
+  fi
+  
+  # If we've found a reason to review, we can stop checking
+  if [ "$requires_review" = true ]; then
+    break
+  fi
+  
+done <<< "$diff_files" # Feed the diff_files into the loop
+
+# 5. Output results for the workflow to use
+echo "Review required: $requires_review"
+echo "requires_review=$requires_review" >> "$GITHUB_OUTPUT"
+
+if [ "$requires_review" = true ]; then
+  echo "DOMAIN_OWNERS=$domain_owners" >> "$GITHUB_OUTPUT"
+fi
+
+echo "Certified Model Check complete."
+exit 0
