@@ -198,4 +198,73 @@ jobs:
 
 
 
+name: Certified Model Check
 
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write # To add reviewers
+  contents: read       # To check out code
+
+jobs:
+  check_certified_model:
+    runs-on: ubuntu-latest
+    
+    # Pass the result to the next job
+    outputs:
+      requires_review: ${{ steps.certified_check.outputs.requires_review }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify script existence
+        run: |
+          if [ ! -f .github/workflows/check_certified_model.sh ]; then
+            echo "::error:: Script not found at .github/workflows/check_certified_model.sh"
+            exit 1
+          fi
+
+      - name: Set script permissions
+        run: chmod +x .github/workflows/check_certified_model.sh
+
+      - name: Run Certified Model Check
+        id: certified_check
+        run: .github/workflows/check_certified_model.sh
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          # Update this list with GitHub usernames for the comment/assign step
+          DOMAIN_OWNERS_LIST: "github_user_1,github_user_2"
+          
+      - name: Add Reviewers (Notification)
+        # If review is required, we add them as reviewers, but we DO NOT fail the job here.
+        if: steps.certified_check.outputs.requires_review == 'true'
+        run: |
+          echo "Certified model modified. Adding Domain Owners as reviewers."
+          gh pr edit ${{ github.event.pull_request.number }} --add-reviewer "${{ env.DOMAIN_OWNERS_LIST }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ----------------------------------------------------
+  # NEW JOB: This is the "Gate"
+  # ----------------------------------------------------
+  wait_for_approval:
+    runs-on: ubuntu-latest
+    needs: [check_certified_model]
+    # Only run this job if the script found a certified model change
+    if: needs.check_certified_model.outputs.requires_review == 'true'
+    
+    # This matches the Environment you created in Settings
+    environment: Certified Model Review
+    
+    steps:
+      - name: Waiting for approval
+        run: |
+          echo "This job is paused."
+          echo "It is waiting for a Domain Owner to approve the deployment in the 'Certified Model Review' environment."
+          echo "Once approved, this check will turn green and the PR can merge."
