@@ -475,3 +475,126 @@ fi
 
 echo "Certified Model Check complete."
 exit 0
+
+
+
+
+#!/bin/bash
+set -e # Exit on error
+set -o pipefail # Fail on a pipe error
+
+echo "Starting Certified Model Check..."
+
+# 1. Define the certified tag string to look for.
+CERTIFIED_TAG_PATTERN="IS_CERTIFIED:[[:space:]]*['\"]TRUE['\"]"
+
+# 2. Get variables from workflow environment
+base_sha="$BASE_SHA"
+head_sha="$HEAD_SHA"
+
+if [ -z "$base_sha" ]; then
+  echo "::error:: BASE_SHA environment variable is not set."
+  exit 1
+fi
+if [ -z "$head_sha" ]; then
+  echo "::error:: HEAD_SHA environment variable is not set."
+  exit 1
+fi
+
+# 3. Get list of all changed files using the exact SHAs
+echo "Finding diff between base (${base_sha}) and head (${head_sha})"
+merge_base=$(git merge-base "$base_sha" "$head_sha")
+diff_files=$(git diff --name-only "$merge_base" "$head_sha")
+
+if [ -z "$diff_files" ]; then
+  echo "No files changed."
+  echo "requires_review=false" >> "$GITHUB_OUTPUT"
+  exit 0
+fi
+
+echo "Changed files:"
+echo "$diff_files"
+
+requires_review=false
+
+# 4. Loop through each changed file
+while IFS= read -r file; do
+  
+  # -------------------------------------------------------------------------
+  # CHECK A: Validate that IS_CERTIFIED is ONLY used in 'consumption' folder
+  # -------------------------------------------------------------------------
+  if [[ "$file" == "dbt/"* ]]; then
+    # Check if file has the certified tag
+    if grep -q -E "$CERTIFIED_TAG_PATTERN" "$file"; then
+      
+      # If tag is found, check if the file path is INSIDE 'dbt/models/consumption'
+      if [[ "$file" != "dbt/models/consumption/"* ]]; then
+        echo "::error:: ❌ ILLEGAL TAG DETECTED!"
+        echo "::error:: The tag 'IS_CERTIFIED: TRUE' was found in '$file'."
+        echo "::error:: This tag is ONLY allowed in the 'dbt/models/consumption/' directory."
+        exit 1 # Fail the workflow immediately
+      fi
+    fi
+  fi
+
+  # -------------------------------------------------------------------------
+  # CHECK B: Normal Logic - Detect changes to certified models in Consumption
+  # -------------------------------------------------------------------------
+  
+  # Only process files inside dbt/models/consumption for the review trigger
+  if [[ "$file" == "dbt/models/consumption/"* ]]; then
+
+    # Case 1: A .sql file changed
+    if [[ "$file" == *".sql" ]]; then
+      echo "Checking changed SQL model: $file"
+      model_dir=$(dirname "$file")
+      model_name=$(basename "$file" .sql)
+      
+      search_dirs=("$model_dir" "$(dirname "$model_dir")")
+      unique_search_dirs=($(printf "%s\n" "${search_dirs[@]}" | sort -u))
+
+      for dir in "${unique_search_dirs[@]}"; do
+        if [ -d "$dir" ]; then
+          for yml_file in "$dir"/*.yml; do
+            if [ -f "$yml_file" ]; then
+              echo "  Checking corresponding config: $yml_file"
+              
+              is_certified=$(awk -v model="$model_name" -v tag="$CERTIFIED_TAG_PATTERN" '
+                BEGIN { RS = "\n[[:space:]]*- name:" }
+                $0 ~ "^[[:space:]]*" model "[[:space:]]*(\n|$)" {
+                  if ($0 ~ tag) { print "true"; exit }
+                }
+              ' "$yml_file")
+              
+              if [ "$is_certified" == "true" ]; then
+                 echo "  Found certified model '$model_name' changed. Triggering review."
+                 requires_review=true
+                 break 2
+              fi
+            fi
+          done
+        fi
+      done
+    
+    # Case 2: A .yml file changed directly
+    elif [[ "$file" == *".yml" ]]; then
+      echo "Checking changed YML config: $file"
+      if grep -q -E "$CERTIFIED_TAG_PATTERN" "$file"; then
+        echo "  Found certified tag in changed YML. Triggering review."
+        requires_review=true
+      fi
+    fi
+  fi
+  
+  if [ "$requires_review" = true ]; then
+    break
+  fi
+  
+done <<< "$diff_files"
+
+# 5. Output results
+echo "Review required: $requires_review"
+echo "requires_review=$requires_review" >> "$GITHUB_OUTPUT"
+
+echo "Certified Model Check complete."
+exit 0
