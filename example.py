@@ -598,3 +598,104 @@ echo "requires_review=$requires_review" >> "$GITHUB_OUTPUT"
 
 echo "Certified Model Check complete."
 exit 0
+
+
+
+
+
+
+#!/bin/bash
+set -e
+set -o pipefail
+
+echo "Starting Certified Model Check..."
+CERTIFIED_TAG_PATTERN="IS_CERTIFIED:[[:space:]]*['\"]TRUE['\"]"
+
+base_sha="$BASE_SHA"
+head_sha="$HEAD_SHA"
+
+if [[ -z "$base_sha" || -z "$head_sha" ]]; then
+  echo "::error:: Missing SHAs"
+  exit 1
+fi
+
+echo "Diffing $base_sha...$head_sha"
+merge_base=$(git merge-base "$base_sha" "$head_sha")
+diff_files=$(git diff --name-only "$merge_base" "$head_sha")
+
+if [ -z "$diff_files" ]; then
+  echo "No files changed."
+  echo "requires_review=false" >> "$GITHUB_OUTPUT"
+  exit 0
+fi
+
+# Trackers for the folder separation rule
+has_consumption_changes=false
+has_curated_changes=false
+requires_review=false
+
+# Loop through files
+while IFS= read -r file; do
+  
+  # --- 1. TRACK FOLDER CHANGES (For Separation Rule) ---
+  if [[ "$file" == "dbt/models/consumption/"* ]]; then
+    has_consumption_changes=true
+  elif [[ "$file" == "dbt/models/curated/"* ]]; then
+    has_curated_changes=true
+  fi
+
+  # --- 2. SECURITY CHECK (The "Red Light") ---
+  # If tag exists but NOT in consumption -> FAIL
+  if [[ "$file" == "dbt/"* ]] && grep -q -E "$CERTIFIED_TAG_PATTERN" "$file"; then
+     if [[ "$file" != "dbt/models/consumption/"* ]]; then
+        echo "::error:: ❌ ILLEGAL TAG: 'IS_CERTIFIED' found in '$file'."
+        echo "::error:: This tag is ONLY allowed in 'dbt/models/consumption/'."
+        exit 1
+     fi
+  fi
+
+  # --- 3. CERTIFIED CHECK (The "Green Light") ---
+  # Check if we need a review
+  if [[ "$file" == "dbt/models/consumption/"* ]]; then
+    
+    # Check SQL files
+    if [[ "$file" == *".sql" ]]; then
+      model_dir=$(dirname "$file")
+      model_name=$(basename "$file" .sql)
+      
+      search_dirs=("$model_dir" "$(dirname "$model_dir")")
+      for dir in "${search_dirs[@]}"; do
+        if [ -d "$dir" ]; then
+          for yml_file in "$dir"/*.yml; do
+            if [ -f "$yml_file" ]; then
+              is_certified=$(awk -v model="$model_name" -v tag="$CERTIFIED_TAG_PATTERN" 'BEGIN {RS="\n[[:space:]]*- name:"} $0 ~ "^[[:space:]]*" model "[[:space:]]*(\n|$)" {if ($0 ~ tag) {print "true"; exit}}' "$yml_file")
+              if [ "$is_certified" == "true" ]; then
+                 echo "Certified model modified ($model_name). Review required."
+                 requires_review=true
+              fi
+            fi
+          done
+        fi
+      done
+
+    # Check YML files directly
+    elif [[ "$file" == *".yml" ]]; then
+      if grep -q -E "$CERTIFIED_TAG_PATTERN" "$file"; then
+        echo "Certified tag found in YML change. Review required."
+        requires_review=true
+      fi
+    fi
+  fi
+
+done <<< "$diff_files"
+
+# --- 4. FINAL VALIDATION: SEPARATION OF CONCERNS ---
+# If both folders were touched, FAIL the workflow.
+if [ "$has_consumption_changes" = true ] && [ "$has_curated_changes" = true ]; then
+  echo "::error:: ❌ MULTI-LAYER CHANGE DETECTED!"
+  echo "::error:: This PR modifies files in BOTH 'dbt/models/consumption' and 'dbt/models/curated'."
+  echo "::error:: Best Practice: Please separate these changes into two different Pull Requests."
+  exit 1
+fi
+
+echo "requires_review=$requires_review" >> "$GITHUB_OUTPUT"
