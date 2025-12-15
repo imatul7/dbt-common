@@ -86,3 +86,86 @@ while IFS= read -r file; do
 done <<< "$diff_files"
 
 echo "requires_review=$requires_review" >> "$GITHUB_OUTPUT"
+
+
+
+
+
+Here is the updated, complete documentation package. I have removed the PAT/API method and focused entirely on the Environment-based Approval workflow, which is the native and most secure way to handle this.
+📘 Certified Model Governance: Comprehensive Guide
+1. System Overview
+The Certified Model Check is an automated governance workflow designed to protect critical data assets. It ensures that "Certified" reporting models are not modified without explicit approval from the Data Platform Team.
+Key Features
+ * Strict Location Policy: The IS_CERTIFIED tag is only allowed in the dbt/models/consumption/ directory. Usage elsewhere causes an immediate error.
+ * Smart Detection: The workflow scans git diff to see if a certified model (SQL or YAML) has been touched.
+ * Automated Gating: If a certified model is changed, the PR is automatically paused and blocked until the Data Platform Team approves it via the GitHub Environment protection rules.
+2. User Guide (For Developers)
+Target Audience: Analytics Engineers & Data Engineers
+Goal: Learn how to certify a model and understand the PR process.
+How to Certify a Model
+To mark a model as "Certified," add the IS_CERTIFIED tag to its .yml configuration file.
+✅ The Golden Rule:
+You may ONLY certify models located in the consumption folder (dbt/models/consumption/).
+Example: dbt/models/consumption/finance/fct_revenue.yml
+version: 2
+
+models:
+  - name: fct_revenue
+    description: "Certified revenue table for the CFO dashboard."
+    config:
+      IS_CERTIFIED: 'TRUE'   # <--- Add this tag here.
+                             # (Case-insensitive: 'True', "TRUE", true all work)
+    columns:
+      - name: amount
+        description: "Total revenue amount"
+
+What happens when I open a PR?
+The workflow "Certified Model Check" runs automatically on every Pull Request.
+| Scenario | What you did | Workflow Status | Action Required |
+|---|---|---|---|
+| A. Normal Change | Modified standard models (no tag). | ✅ Pass (Green) | You can merge as soon as standard peer reviews are done. |
+| B. Certified Change | Modified a model with IS_CERTIFIED: 'TRUE' inside consumption/. | ⚠️ Waiting | The workflow will Pause (Yellow). 
+ GitHub will notify the Data Platform Team to review the deployment. 
+ You must wait for their approval. |
+| C. Illegal Tag | Added IS_CERTIFIED to a model in staging/, intermediate/, or curated/. | ❌ Fail (Red) | The build fails immediately with: 
+ ❌ ILLEGAL TAG DETECTED. 
+ Fix: Remove the tag from that file and push again. |
+3. Admin Guide (For Platform Team)
+Target Audience: Platform Admins / DevOps
+Goal: Configure the repository to enforce these rules.
+Step 1: Configure the GitHub Environment
+This is the "Gate" that pauses the workflow and demands approval.
+ * Go to your Repository Settings.
+ * In the left sidebar, click Environments.
+ * Click New environment.
+ * Name: Certified Model Review (Must match the name in your YAML file).
+ * Click Configure environment.
+ * Under Deployment protection rules, check the box Required reviewers.
+ * Search for your Team: Type data-platforms-warehousing.
+   * Note: If you don't see the team, ensure you have created the team in your Organization settings first.
+ * Click Save protection rules.
+Step 2: Configure Branch Protection Rules
+This ensures developers cannot bypass the check or merge failing code.
+ * Go to Settings -> Branches.
+ * Click Add rule.
+ * Branch name pattern: main (or master).
+ * Check Require a pull request before merging.
+ * Check Require status checks to pass before merging.
+   * Search for the job name: check_certified_model
+   * Note: You might need to run the workflow once successfully for this name to appear in the list.
+ * Click Create.
+Step 3: Verify the Script Logic
+Ensure the script .github/workflows/check_certified_model.sh is updated with the latest logic (Case-insensitive & Folder check).
+ * Regex Pattern used: IS_CERTIFIED:[[:space:]]*['\"]*TRUE['\"]*
+ * Folder Enforcement:
+   if [[ "$file" != "dbt/models/consumption/"* ]]; then
+   echo "::error:: ❌ ILLEGAL TAG DETECTED!"
+   exit 1
+fi
+
+Troubleshooting
+| Issue | Cause | Fix |
+|---|---|---|
+| Workflow finishes Green instantly but I changed a certified model. | The script didn't match the tag. | Ensure the tag is spelled correctly (IS_CERTIFIED). The script is case-insensitive, so True/TRUE are both fine. |
+| Workflow is stuck on Yellow indefinitely. | It is waiting for approval. | A member of the data-platforms-warehousing team must go to the "Environments" page (or the PR checks tab) and click "Approve and Deploy". |
+| "Resource not accessible" error. | Permissions missing. | Ensure the YAML file has permissions: pull-requests: write. |
